@@ -4,12 +4,13 @@ import viteLogo from '/vite.svg'
 import './index.css'
 import Nav from './components/Nav.jsx'
 import Index from './pages/Index.jsx'
+import Busquedas from './pages/Busquedas.jsx'
 
 function App() {
 
   return (
     <>
-      <Index />
+      <Busquedas />
     </>
   )
 }
