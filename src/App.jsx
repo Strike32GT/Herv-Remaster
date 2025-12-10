@@ -8,12 +8,13 @@ import Busquedas from './pages/Busquedas.jsx'
 import Foro from './pages/Foro.jsx'
 import Login from './auth_page/Login.jsx'
 import CrearCuenta from './auth_page/Create_Acount.jsx'
+import Conocer from './pages/Conocer.jsx'
 
 function App() {
 
   return (
     <>
-      <CrearCuenta />
+      <Conocer />
     </>
   )
 }
