@@ -1,6 +1,60 @@
+import {  useState } from "react";
 import { FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import {registrarUsuario} from "../api/apiUsuario";
 
 export default function CrearCuenta() {
+  const [nombreCompleto, setNombreCompleto] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirma_password, setConfirmaPassword] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [mostrarConfirmPassword, setMostrarConfirmPassword] = useState(false);
+  const [aceptarTerminos, setAceptarTerminos] = useState(false);
+  const [error, setError] = useState("");
+  const [cargando, setCargando]=useState(false);
+  const navigate = useNavigate();
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if(!aceptarTerminos){
+      setError("Debes aceptar los terminos y condiciones");
+      return;
+    }
+
+    if(!nombreCompleto ||!correo || !password || !password || !confirma_password){
+      setError("Debes completar todos los campos");
+      return;
+    }
+
+    if(password !== confirma_password){
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    try{
+      setCargando(true);
+      await registrarUsuario({
+        nombre_completo: nombreCompleto,
+        correo,
+        password,
+
+      });
+      setCargando(false);
+      navigate("/");
+    }catch(err){
+      setCargando(false);
+      if(err.correo){
+        setError(err.correo.join(" "));
+      } else {
+        setError("Ocurrio un error al crear cuenta .");
+      }
+    }
+  };
+
   return (
     <div className="flex items-center justify-center px-4 py-12">
       <section className="w-full max-w-md rounded-3xl bg-white px-8 py-8 shadow-xl">
@@ -16,7 +70,7 @@ export default function CrearCuenta() {
         </div>
 
         
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           
 
           <div className="space-y-1">
@@ -27,6 +81,8 @@ export default function CrearCuenta() {
               type="text"
               placeholder="Juan Pérez"
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-sky-400 focus:ring-1 focus:ring-sky-300"
+              value={nombreCompleto}
+              onChange={(e) => setNombreCompleto(e.target.value)}
             />
           </div>
 
@@ -39,6 +95,8 @@ export default function CrearCuenta() {
               type="email"
               placeholder="tu@email.com"
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-sky-400 focus:ring-1 focus:ring-sky-300"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
             />
           </div>
 
@@ -52,13 +110,15 @@ export default function CrearCuenta() {
                 <FaLock />
               </span>
               <input
-                type="password"
+                type={mostrarPassword ? "text" : "password"}
                 className="w-full bg-transparent text-sm text-slate-700 outline-none"
                 placeholder="********"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <button
                 type="button"
-                className="ml-2 text-xs text-slate-400 hover:text-slate-600"
+                className="ml-2 text-xs text-slate-400 hover:text-slate-600" onClick={() => setMostrarPassword((prev)=> !prev)}
               >
                 Mostrar
               </button>
@@ -75,13 +135,15 @@ export default function CrearCuenta() {
                 <FaLock />
               </span>
               <input
-                type="password"
+                type={mostrarConfirmPassword ? "text" : "password"}
                 className="w-full bg-transparent text-sm text-slate-700 outline-none"
                 placeholder="********"
+                value={confirma_password}
+                onChange={(e) => setConfirmaPassword(e.target.value)}
               />
               <button
                 type="button"
-                className="ml-2 text-xs text-slate-400 hover:text-slate-600"
+                className="ml-2 text-xs text-slate-400 hover:text-slate-600" onClick={() => setMostrarConfirmPassword((prev)=> !prev)}
               >
                 Mostrar
               </button>
@@ -94,6 +156,8 @@ export default function CrearCuenta() {
               id="terms"
               type="checkbox"
               className="mt-0.5 h-3.5 w-3.5 rounded border-slate-300 text-sky-600 focus:ring-sky-400"
+              checked = {aceptarTerminos}
+              onChange={(e) => setAceptarTerminos(e.target.checked)}
             />
             <label
               htmlFor="terms"
@@ -110,12 +174,15 @@ export default function CrearCuenta() {
             </label>
           </div>
 
+          {error && (
+            <p className="text-xs text-red-500">{error}</p>
+          )}
           
           <button
             type="submit"
             className="mt-2 w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-700"
           >
-            Crear Cuenta
+            {cargando ? "Creando..." : "Crear Cuenta"}
           </button>
         </form>
 
@@ -125,6 +192,7 @@ export default function CrearCuenta() {
           <button
             type="button"
             className="font-medium text-sky-600 hover:text-sky-700"
+            onClick={() => navigate("/")}
           >
             Iniciar sesión
           </button>

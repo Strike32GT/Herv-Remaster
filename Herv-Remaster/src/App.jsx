@@ -9,14 +9,19 @@ import Foro from './pages/Foro.jsx'
 import Login from './auth_page/Login.jsx'
 import CrearCuenta from './auth_page/Create_Acount.jsx'
 import Conocer from './pages/Conocer.jsx'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
 
   return (
-    <>
-      <Conocer />
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path='/' element={<Login/>} />
+        <Route path='/home' element={<Index/>} />
+        <Route path='/create' element={<CrearCuenta/>} />
+      </Routes>
+    </Router>    
+  );
 }
 
 export default App
